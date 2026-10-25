@@ -31,7 +31,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#2b1840;touch-action:n
 <div id="hud" class="px" style="display:none"><span id="hearts">♥♥♥</span><span id="stars">★ 0</span><span class="sp"></span><span id="ht">0m</span><button id="pauseB">II</button></div>
 <div id="joyz" style="display:none"><div id="jb"><div id="jk"></div></div></div>
 <div id="rc" class="ctl" style="display:none"><button class="big" data-k="J">▲</button></div>
-<div id="title" class="ov show"><div class="title px"><span>P</span><span style="animation-delay:.1s">U</span><span style="animation-delay:.2s">F</span><span style="animation-delay:.3s">F</span><span style="animation-delay:.4s">B</span><span style="animation-delay:.5s">A</span><span style="animation-delay:.6s">L</span><span style="animation-delay:.7s">L</span><small>✦ SKY CLIMB ✦</small></div><div id="ver" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));font-size:11px;opacity:.75">v5</div><button class="mbtn" id="playB">▶ PLAY</button><button class="mbtn" id="contB" style="display:none">CONTINUE</button>
+<div id="title" class="ov show"><div class="title px"><span>P</span><span style="animation-delay:.1s">U</span><span style="animation-delay:.2s">F</span><span style="animation-delay:.3s">F</span><span style="animation-delay:.4s">B</span><span style="animation-delay:.5s">A</span><span style="animation-delay:.6s">L</span><span style="animation-delay:.7s">L</span><small>✦ SKY CLIMB ✦</small></div><div id="ver" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));font-size:11px;opacity:.75">v6</div><button class="mbtn" id="playB">▶ PLAY</button><button class="mbtn" id="contB" style="display:none">CONTINUE</button>
 <div class="hint px">◀ ▶ move · hold ▲ to squish-charge, let go to spring<br>🔥 line up with baddies to auto-fire · stick &amp; wall-jump<br>Keys: ←→/A D · Space/Z jump · ↓ drop · P pause</div></div>
 <div id="pause" class="ov"><div class="title px" style="font-size:44px">PAUSED</div><button class="mbtn" id="resB">RESUME</button><button class="mbtn" id="cpB">BACK TO CHECKPOINT</button><button class="mbtn" id="musB">MUSIC: ON</button><button class="mbtn" id="quitB">TITLE</button></div>
 <div id="win" class="ov"><div class="panel"><div class="px" style="font-size:30px;color:#ffe066">★ LEVEL CLEAR! ★</div><div id="winT" class="px" style="font-size:17px"></div><button class="mbtn" id="againB">PLAY AGAIN</button></div></div>
@@ -48,7 +48,7 @@ const OL='#3a1d5c';
 // ================= LEVEL =================
 let plats,path,stars,springs,enemies,hooks,cps,winds,trees,flowers,castle;
 const zoneOf=y=>y>-1800?'grass':y>-3600?'hill':'cloud';
-function P(x,y,w,t,o={}){const p=Object.assign({x,y,w,h:t=='wall'?o.h:7,t,zone:zoneOf(y)},o);plats.push(p);return p}
+function P(x,y,w,t,o={}){const p=Object.assign({x,y,w,h:t=='wall'?o.h:12,t,zone:zoneOf(y)},o);plats.push(p);return p}
 function addPath(p){p.idx=path.length;path.push(p);return p}
 function buildLevel(){seed=11;plats=[];path=[];stars=[];springs=[];enemies=[];hooks=[];cps=[];winds=[];trees=[];flowers=[];
  const ground=P(-50,0,WW+100,'solid',{h:80});addPath(ground);
@@ -59,7 +59,7 @@ function buildLevel(){seed=11;plats=[];path=[];stars=[];springs=[];enemies=[];ho
  while(y>TOP+260){leg++;const zone=zoneOf(y);const style=['steps','hops','bigs','mix'][leg%4];
   // ---- horizontal run ----
   let n=0;while(dir>0?x<WW-300:x>300){n++;let dx,dy;
-   if(style=='steps'){dx=rr(55,80);dy=rr(18,34)}else if(style=='hops'){dx=rr(60,74);dy=n%2?rr(-12,6):rr(24,36)}else if(style=='bigs'){if(n%3==0){dx=rr(30,45);dy=rr(85,105)}else{dx=rr(60,80);dy=rr(6,22)}}else{dx=rr(50,72);dy=rr(0,36)}
+   if(style=='steps'){dx=rr(66,90);dy=rr(20,36)}else if(style=='hops'){dx=rr(72,88);dy=n%2?rr(-12,6):rr(26,38)}else if(style=='bigs'){if(n%3==0){dx=rr(34,48);dy=rr(88,108)}else{dx=rr(70,90);dy=rr(6,24)}}else{dx=rr(62,86);dy=rr(0,38)}
    x+=dx*dir;y-=dy;if(y>-30)y=-30;const w=zone=='cloud'?rr(48,60):rr(48,66);let t=zone=='cloud'&&dy<60&&rnd()<.4?'cloud':'oneway';if(dy>60&&L().t=='cloud')L().t='oneway';
    const p=addPath(P(x-w/2,y,w,t,{big:dy>60}));
    if(zone=='cloud'&&t=='oneway'&&dy<60&&rnd()<.3){p.mover=true;p.move=rr(16,28);p.ph=rnd()*6;p.bx=p.x}
@@ -67,7 +67,7 @@ function buildLevel(){seed=11;plats=[];path=[];stars=[];springs=[];enemies=[];ho
    {const lv=Math.min(1,-y/6000);if((leg>0||n>3)&&p.w>=50&&!p.mover&&t!='cloud'&&n%2==0&&rnd()<.22+lv*.3){const ks=zone=='grass'?['bloop','walker']:zone=='hill'?['hopper','walker','spiky']:['spiky','walker','buzz2'];let k=ks[(rnd()*ks.length)|0];if(k=='buzz2')k='bloop';enemies.push({kind:k,x:p.x+p.w*.7,y:p.y-7,p,dir:-dir,alive:true,hp:k=='bloop'||k=='hopper'?1:2,ph:rnd()*6,wt:0,route:1})}
     if((leg>0||n>6)&&n%3==1&&rnd()<.25+lv*.4){const ay=y-rr(45,60);enemies.push({kind:'swoop',x:x-dir*dx*.5,y:ay,bx:x-dir*dx*.5,by:ay,p:null,dir:1,alive:true,hp:1,ph:rnd()*6,sw:0,cd:1})}}
    if(n%4==2&&zone!='cloud'&&p.w>50)p.flowers=true;
-   if(zone=='grass'&&rnd()<.35)trees.push({x:x+rr(-20,20),y:y+rr(30,60),s:rr(.7,1.1),ph:rnd()*6,bg:true});
+   
    // star arc over gaps
    if(n%5==0){for(let k=1;k<4;k++)stars.push({x:x-dir*dx*k/4,y:y-30-Math.sin(k/4*Math.PI)*22})}
    // bonus side platform with enemy / stars
@@ -101,6 +101,7 @@ function buildLevel(){seed=11;plats=[];path=[];stars=[];springs=[];enemies=[];ho
  const cx=WW/2;while(Math.abs(x-cx)>60||y-TOP>60){x+=Math.sign(cx-x)*Math.min(70,Math.abs(cx-x));y-=Math.min(40,Math.max(0,(y-TOP)-30));addPath(P(x-25,y,50,'oneway'));if(path.length>400)break}
  castle={x:cx-220,y:TOP,w:440,h:30,t:'oneway',castle:true};plats.push(castle);addPath(castle);
  for(let k=0;k<8;k++)stars.push({x:cx-140+k*40,y:TOP-14});
+ for(const p of plats){p.fall=(p.t=='oneway'||p.t=='cloud')&&!p.castle&&!p.mover&&!p.net&&!cps.some(c=>c.p===p)&&!springs.some(q=>q.p===p);p.st=0;p.y0=p.y;p.fade=1}
  enemies=enemies.filter(e=>!cps.some(c=>c.p===e.p||(Math.abs(c.x-e.x)<80&&Math.abs(c.y-e.y)<90)));for(const e of enemies){if(e.hp==null)e.hp=1;e.hp0=e.hp}
  stars.forEach(s=>s.got=false);
  for(const p of plats)p.zone=p.zone||zoneOf(p.y);
@@ -178,6 +179,9 @@ const SFX={
  cjump:()=>{nt(180,.35,'p25',.07,0,1400);nt(360,.3,'p12',.03,A.currentTime+.05,1800);noise(A.currentTime,.25,.08,2000)},
  land:()=>{nt(130,.08,'sine',.18,0,60);noise(A.currentTime,.06,.06,0,900)},
  star:()=>{const t=A.currentTime;[88,92,95,100].forEach((n,i)=>nt(mf(n),.09,'p25',.04,t+i*.045))},
+ creak:(k=0)=>{const t=A.currentTime;nt(140+k*160,.12+k*.06,'p12',.025+k*.03,0,90+k*120);noise(t,.07,.03+k*.04,0,700+k*900)},
+ drop:()=>{nt(300,.35,'p25',.06,0,60);noise(A.currentTime,.3,.08,0,1200)},
+ pop:()=>{nt(700,.08,'sine',.08,0,1100)},
  fire:()=>{nt(900,.12,'p12',.035,0,240);noise(A.currentTime,.09,.06,3000)},
  zap:()=>{nt(700,.1,'p25',.05,0,1400);noise(A.currentTime,.08,.08,0,2500)},
  tink:()=>{nt(1500,.06,'p12',.04,0,1800)},
@@ -190,7 +194,7 @@ const SFX={
  squeak:()=>nt(900,.06,'p12',.03,0,1300),
  win:()=>{const t=A.currentTime;[72,76,79,84,79,84,88,91].forEach((n,i)=>{nt(mf(n),.25,'p25',.07,t+i*.14);nt(mf(n-12),.25,'triangle',.1,t+i*.14)});nt(mf(96),1,'p25',.06,t+1.2,0,true)},
  boom:()=>{noise(A.currentTime,.4,.08,0,800);nt(mf(70+rnd()*20|0),.15,'p12',.03)}};
-const lastS={};function sfx(k){if(!A)return;const t=performance.now();if(lastS[k]&&t-lastS[k]<60)return;lastS[k]=t;SFX[k]()}
+const lastS={};function sfx(k){if(!A)return;const t=performance.now();if(lastS[k]&&t-lastS[k]<60)return;lastS[k]=t;SFX[k](arguments[1])}
 // ================= HERO =================
 const N=14,R=9,G=900;let H,cam,state='title',time=0,keys={},parts=[];
 function newHero(x,y){const p=[];for(let i=0;i<N;i++){const a=i/N*Math.PI*2;p.push({x:x+Math.cos(a)*R,y:y+Math.sin(a)*R,ox:0,oy:0,rx:Math.cos(a)*R,ry:Math.sin(a)*R});p[i].ox=p[i].x;p[i].oy=p[i].y}
@@ -237,14 +241,14 @@ function heroStep(dt){const inp=input(),sub=4,h=dt/sub;const onG=H.gT>0||H.coyot
 function doJump(c){const v=380+c*190;setVel(null,-v,HS);H.gT=0;H.coyote=0;H.charge=0;H.chargeOn=false;H.jPress=null;sfx(c>.2?'cjump':'jump');if(c>.2){ring(H.cx,H.cy+R,'#fff');burst(H.cx,H.cy+R,10,'#fff')}}
 function wallJump(){H.wjSide=H.wall;setVel(-H.wall*160,-370,HS);burst(H.cx+H.wall*R,H.cy,6,'#fff');H.wall=0;H.stickT=1;sfx('jump')}
 function windAt(x,y){for(const w of winds)if(y>w.y0&&y<w.y1&&x>w.x0&&x<w.x1){const on=Math.sin(time*1.3+w.ph);return on>0?w.dir*240*on:0}return 0}
-function collideHero(h){let gnd=null,wall=0,bounceV=0;const near=plats.filter(p=>p.y-50<H.cy+40&&p.y+(p.h||7)+40>H.cy&&p.x-30<H.cx&&p.x+p.w+30>H.cx);
+function collideHero(h){let gnd=null,wall=0,bounceV=0;const near=plats.filter(p=>!(p.st>=2)&&p.y-50<H.cy+40&&p.y+(p.h||7)+40>H.cy&&p.x-30<H.cx&&p.x+p.w+30>H.cx);
  for(const q of H.p){const vy=(q.y-q.oy)/h;
   for(const p of near){if(q.x<p.x||q.x>p.x+p.w)continue;
    if(p.t=='solid'||p.t=='wall'){if(q.y>p.y&&q.y<p.y+p.h){const pl=q.x-p.x,pr=p.x+p.w-q.x;if(q.oy<=p.y+2){q.y=p.y;gnd=p;if(vy>0)q.oy=q.y-vy*h*.05}else if(q.oy>=p.y+p.h-2&&p.t!='wall'||(p.t=='wall'&&q.oy>=p.y+p.h-2)){q.y=p.y+p.h;q.oy=q.y}else if(pl<pr){q.x=p.x;q.ox=q.x;wall=1}else{q.x=p.x+p.w;q.ox=q.x;wall=-1}}continue}
    if(H.drop>0)continue;
    if(q.y>p.y&&q.oy<=p.y+1.5&&q.y<p.y+p.h+6){if(p.t=='cloud'&&vy>230)bounceV=Math.max(bounceV,vy);q.y=p.y;gnd=p;q.ox=q.x-((q.x-q.ox)*.85+((p.vx||0)*h)*.15)}}
   if(q.x<0){q.x=0;q.ox=q.x}if(q.x>WW){q.x=WW;q.ox=q.x}}
- if(gnd){if(H.gT<=0&&H.airT>.15){sfx('land');if(H.airT>.45){burst(H.cx,H.cy+R,6,'#fff');dust(H.cx,H.cy+R)}gnd.sq=1}H.gT=.12;H.coyote=.15;H.airT=0;H.wjSide=0;H.gC=gnd;H.ground=gnd;H.stickT=0;
+ if(gnd){if(H.gT<=0&&H.airT>.15){sfx('land');if(H.airT>.45){burst(H.cx,H.cy+R,6,'#fff');dust(H.cx,H.cy+R)}gnd.sq=1}H.gT=.12;H.coyote=.15;H.airT=0;H.wjSide=0;if(gnd.fall&&gnd.st==0){gnd.st=1;gnd.ft=0;gnd.ct=0}H.gC=gnd;H.ground=gnd;H.stickT=0;
   if(gnd.mover)for(const q of H.p)q.x+=gnd.dx/4}
  else H.gC=null;
  if(wall&&!H.wall&&H.gT<=0){sfx('stick');burst(H.cx+wall*R,H.cy,4,'#fff')}H.wall=wall;
@@ -256,7 +260,7 @@ function dust(x,y){for(let i=0;i<6;i++)parts.push({x:x+(i-2.5)*3,y,vx:(i-2.5)*14
 function ring(x,y,c){parts.push({x,y,vx:0,vy:0,l:.35,c,ring:1})}
 function update(dt){time+=dt;
  for(const p of plats){if(p.mover){const nx=p.bx+Math.sin(time*1.1+p.ph)*p.move;p.dx=nx-p.x;p.vx=p.dx/dt;p.x=nx}if(p.sq>0)p.sq=Math.max(0,p.sq-dt*4)}
- heroStep(dt);
+ heroStep(dt);fallStep(dt);
  for(const s of springs){if(Math.abs(H.cx-s.x)<9&&H.cy>s.y-20&&H.cy<s.y-2&&H.vys>=-0.1){setVel(null,-640,HS);s.t=.3;sfx('spring');H.gT=0;burst(s.x,s.y-6,8,'#ffe066')}if(s.t>0)s.t-=dt}
  for(const s of stars)if(!s.got&&Math.abs(s.x-H.cx)<14&&Math.abs(s.y-H.cy)<14){s.got=true;H.stars++;H.face.happy=.8;sfx('star');burst(s.x,s.y,8,'#ffe066');parts.push({x:s.x,y:s.y,vx:0,vy:-30,l:.6,c:'#fff',txt:'+1'})}
  for(const c of cps)if(!c.on&&Math.abs(H.cx-c.x)<30&&Math.abs(H.cy-(c.y-10))<16){c.on=true;H.cp=c;H.hearts=3;sfx('cp');flash('CHECKPOINT!');burst(c.x,c.y-20,16,'#7dff9a');save()}
@@ -297,6 +301,15 @@ function drawFB(){for(const f of fbs){const fl=1+Math.sin(time*40)*.15;ctx.fillS
  if(H.puff>0){const k=1-H.puff/.2,px=H.cx+(H.pdx||H.facing)*(R+2+k*5),py=H.cy+2+(H.pdy||0)*(R+2+k*5);ctx.globalAlpha=1-k*.7;circ(px,py,1.8+k*3,'#ffc0a8');circ(px,py,1+k*1.5,'#fff');ctx.globalAlpha=1}}
 function stepParts(dt){parts=parts.filter(p=>(p.l-=dt)>0);for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.g)p.vy+=200*dt;else{p.vx*=.92;p.vy*=.92}}}
 function flash(m){msg=m;msgT=1.6}
+function fallStep(dt){for(const p of plats){if(!p.fall||!p.st)continue;
+ if(p.st==1){p.ft+=dt;p.ct-=dt;const k=p.ft/3;if(p.ct<=0){sfx('creak',k);p.ct=.55-.38*k;if(vis2(p))for(let i=0;i<2;i++)parts.push({x:p.x+rnd()*p.w,y:p.y+p.h,vx:0,vy:20,l:.4,c:'#c9a27a',g:1})}
+  if(p.ft>=3){p.st=2;p.vy=0;p.rt=0;sfx('drop');if(H.ground===p){H.gT=0;H.coyote=0}}}
+ else if(p.st==2||p.st==3){p.rt+=dt;if(p.st==2){p.vy+=520*dt;p.y+=p.vy*dt;if(p.y>p.y0+500)p.st=3}
+  if(p.rt>=5){const over=H.cx+R+4>p.x&&H.cx-R-4<p.x+p.w&&H.cy+R+4>p.y0&&H.cy-R-4<p.y0+p.h;if(!over){p.st=0;p.y=p.y0;p.fade=0;if(vis2(p))sfx('pop')}}}
+ }
+ for(const p of plats)if(p.fade<1)p.fade=Math.min(1,p.fade+dt*2.5);
+ for(const e of enemies)if(e.alive&&e.p&&e.p.st>=2){e.y=e.p.y-7;if(e.p.st==3)e.alive=false}}
+function vis2(p){return p.x+p.w>cam.x-20&&p.x<cam.x+VW+20&&p.y>cam.y-20&&p.y<cam.y+VH+20}
 function respawn(){fbs=[];const c=H.cp,st=H.stars,cp=H.cp;const x=c?c.x:150,y=c?c.y-12:-12;H=newHero(x,y);H.stars=st;H.cp=cp;H.inv=1.5;flash('TRY AGAIN!')}
 // ================= RENDER =================
 function rr2(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
@@ -403,7 +416,13 @@ function render(){ctx.setTransform(1,0,0,1,0,0);drawBG();
  if(cam.y>-600)for(let i=0;i<6;i++){const bx=200+i*230+Math.sin(time*.7+i)*60,by=-30-Math.abs(Math.sin(time*1.3+i*2))*25;if(vis(bx,by)){const w=(time*12+i|0)%2;rr2(bx-(w?3:2),by-2,w?3:2,3,['#fff','#ffe066','#8fd3ff'][i%3]);rr2(bx+1,by-2,w?3:2,3,['#fff','#ffe066','#8fd3ff'][i%3]);rr2(bx,by-1,1,3,OL)}}
  // wind
  for(const w of winds){const on=Math.sin(time*1.3+w.ph);if(on<=0||!vis((w.x0+w.x1)/2,(w.y0+w.y1)/2,300))continue;ctx.globalAlpha=on*.8;for(let k=0;k<14;k++){const yy=w.y0+((k*37)%(w.y1-w.y0)),xx=w.x0+((time*220*w.dir+k*61)%(w.x1-w.x0)+(w.x1-w.x0))%(w.x1-w.x0);rr2(xx,yy,16,1,'#fff');rr2(xx+4*w.dir,yy-1,6,1,'#fff')}ctx.globalAlpha=1}
- for(const p of plats){if(p.t=='solid'||p.t=='wall'?(p.y<cam.y+VH+20&&p.y+p.h>cam.y-20):vis(p.x+p.w/2,p.y,p.w))drawPlat(p)}
+ for(const p of plats){if(p.st==3)continue;if(p.t=='solid'||p.t=='wall'?(p.y<cam.y+VH+20&&p.y+p.h>cam.y-20):vis(p.x+p.w/2,p.y,p.w)){
+  if(p.fall&&(p.st||p.fade<1)){const k=p.st==1?p.ft/3:p.st==2?1:0;const ox=p.st==1?Math.sin(time*(30+40*k))*k*2.2:0;const oy=p.st==1?Math.abs(Math.sin(time*23))*k:0;ctx.save();
+   if(p.fade<1){const f=p.fade,sc=.6+.4*f+Math.sin(f*3.14)*.12;ctx.globalAlpha=f;ctx.translate(p.x+p.w/2,p.y+p.h/2);ctx.scale(sc,sc);ctx.translate(-(p.x+p.w/2),-(p.y+p.h/2))}
+   if(p.st==2)ctx.globalAlpha=Math.max(0,1-(p.y-p.y0)/500);
+   ctx.translate(ox,oy);drawPlat(p);
+   if(k>0){ctx.globalAlpha*=.55*k;rr2(p.x,p.y,p.w,p.h,'#ff5a7a');ctx.globalAlpha=p.st==2?Math.max(0,1-(p.y-p.y0)/500):1;const nc=Math.ceil(k*4);ctx.strokeStyle=OL;ctx.lineWidth=1;for(let i=0;i<nc;i++){const cx=p.x+p.w*(i+.5)/4+(hash(i+p.x)-.5)*6;ctx.beginPath();ctx.moveTo(cx,p.y+1);ctx.lineTo(cx+2,p.y+p.h*.45);ctx.lineTo(cx-1,p.y+p.h-1);ctx.stroke()}}
+   ctx.restore()}else drawPlat(p)}}
  if(cam.y<TOP+300)drawCastle();
  for(const s of springs)if(vis(s.x,s.y)){const c=s.t>0?2:6;rr2(s.x-6,s.y-c-4,12,4,OL);rr2(s.x-5,s.y-c-3,10,2,'#ff4f6a');rr2(s.x-5,s.y-c-3,10,1,'#ff9fb0');for(let k=0;k<c;k+=2){rr2(s.x-4,s.y-c+k,8,1,'#ccc');rr2(s.x-4,s.y-c+k+1,8,1,'#888')}}
  for(const c of cps)if(vis(c.x,c.y)){rr2(c.x-1,c.y-26,2,26,OL);circ(c.x,c.y-27,2,'#ffe066');ctx.fillStyle=OL;const wv=Math.sin(time*5);ctx.beginPath();ctx.moveTo(c.x+1,c.y-25);ctx.lineTo(c.x+14,c.y-20+wv);ctx.lineTo(c.x+1,c.y-14);ctx.fill();ctx.fillStyle=c.on?'#7dff9a':'#eee';ctx.beginPath();ctx.moveTo(c.x+1,c.y-24);ctx.lineTo(c.x+12,c.y-20+wv);ctx.lineTo(c.x+1,c.y-16);ctx.fill();if(c.on&&(time*4|0)%2)star5(c.x+5,c.y-20,2,'#fff',1,null)}
@@ -456,12 +475,12 @@ requestAnimationFrame(loop);
 window.__pb={stats,get H(){return H},get plats(){return plats},set plats(v){plats=v},get enemies(){return enemies},get fbs(){return fbs},get path(){return path},get state(){return state},get cam(){return cam},get stars(){return stars},start,tick,render,get time(){return time},get track(){return track},
  botTarget(){if(!H)return null;let k=0;if(H.ground&&H.ground.idx!=null)k=H.ground.idx;else if(this._cur)k=this._cur;const t=path[Math.min(path.length-1,k+1)];return t?{x:t.castle?WW/2:t.x+t.w/2,y:t.y}:null},
  bot(){const onG=H.gT>0||H.coyote>0;
-  if(H.ground&&H.gT>0){if(H.ground.idx!=null){this._cur=H.ground.idx;this._side=null}else{let k=this._cur||0;let best=k,bd=1e9;for(let j=Math.max(0,k-15);j<Math.min(path.length,k+15);j++){const p=path[j];if(p.y>=H.ground.y-2){const d=Math.abs(p.y-H.ground.y)+Math.abs(p.x+p.w/2-H.cx)*.3;if(d<bd){bd=d;best=j}}}this._cur=best;this._side=H.ground}}
+  if(H.ground&&H.gT>0.08&&(H.vys>-0.3||H.ground.t=='cloud'||H.gT>0.4)){if(H.ground.idx!=null){this._cur=H.ground.idx;this._side=null}else{let k=this._cur||0;let best=k,bd=1e9;for(let j=Math.max(0,k-15);j<Math.min(path.length,k+15);j++){const p=path[j];if(p.y>=H.ground.y-2){const d=Math.abs(p.y-H.ground.y)+Math.abs(p.x+p.w/2-H.cx)*.3;if(d<bd){bd=d;best=j}}}this._cur=best;this._side=H.ground}}
   let cur=this._cur||0;const tgt=path[Math.min(path.length-1,cur+1)];const b={};
   const tx=tgt.castle?WW/2:tgt.x+tgt.w/2;const curP=(this._side&&H.ground===this._side)?this._side:path[cur];
   const lo=curP.t=='solid'?10:curP.x+10,hi=curP.t=='solid'?WW-10:curP.x+curP.w-10;
   const stand=Math.max(lo,Math.min(hi,tx));const need=(curP.y-tgt.y)+14+Math.max(0,Math.abs(tx-stand)-tgt.w/2-45)*1.0;
-  if(onG&&!this._ch){if(Math.abs(H.cx-stand)>8){b[H.cx<stand?'R':'L']=true}else if(Math.abs(H.vxs/HS)>25){}else{this._ch=true;this._t=0}}
+  const hurry=H.ground&&H.ground.st==1&&H.ground.ft>3-(need>46?Math.min(.85,.12+(need-44)/120):0)-.5;if(onG&&!this._ch){if(Math.abs(H.cx-stand)>8&&!hurry){b[H.cx<stand?'R':'L']=true}else if(Math.abs(H.vxs/HS)>25&&!hurry){}else{this._ch=true;this._t=0}}
   if(this._ch){const th=need>46?Math.min(.85,.12+(need-44)/120):0;this._t+=1/60;if(this._t<th+.02)b.J=true;else this._ch=false}
   if(!onG&&Math.abs(H.cx-tx)>3)b[H.cx<tx?'R':'L']=true;
   return b}};
