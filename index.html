@@ -4,7 +4,7 @@
 <style>
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:#2b1840;touch-action:none;overscroll-behavior:none;font-family:"Courier New",monospace;color:#fff}
-#c{position:fixed;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+#c{position:fixed;left:0;top:0;image-rendering:pixelated;image-rendering:crisp-edges}
 .px{font-weight:900;letter-spacing:1px;text-shadow:2px 0 #3a1d5c,-2px 0 #3a1d5c,0 2px #3a1d5c,0 -2px #3a1d5c,2px 2px #3a1d5c,3px 3px #3a1d5c}
 #hud{position:fixed;left:0;right:0;top:env(safe-area-inset-top);display:flex;gap:12px;align-items:center;padding:8px 12px;font-size:18px;pointer-events:none}
 #hud .sp{flex:1}#hearts{color:#ff6fae}#stars{color:#ffe066}
@@ -31,7 +31,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#2b1840;touch-action:n
 <div id="hud" class="px" style="display:none"><span id="hearts">♥♥♥</span><span id="stars">★ 0</span><span class="sp"></span><span id="ht">0m</span><button id="pauseB">II</button></div>
 <div id="joyz" style="display:none"><div id="jb"><div id="jk"></div></div></div>
 <div id="rc" class="ctl" style="display:none"><button class="big" data-k="J">▲</button></div>
-<div id="title" class="ov show"><div class="title px"><span>P</span><span style="animation-delay:.1s">U</span><span style="animation-delay:.2s">F</span><span style="animation-delay:.3s">F</span><span style="animation-delay:.4s">B</span><span style="animation-delay:.5s">A</span><span style="animation-delay:.6s">L</span><span style="animation-delay:.7s">L</span><small>✦ SKY CLIMB ✦</small></div><button class="mbtn" id="playB">▶ PLAY</button><button class="mbtn" id="contB" style="display:none">CONTINUE</button>
+<div id="title" class="ov show"><div class="title px"><span>P</span><span style="animation-delay:.1s">U</span><span style="animation-delay:.2s">F</span><span style="animation-delay:.3s">F</span><span style="animation-delay:.4s">B</span><span style="animation-delay:.5s">A</span><span style="animation-delay:.6s">L</span><span style="animation-delay:.7s">L</span><small>✦ SKY CLIMB ✦</small></div><div id="ver" style="position:fixed;right:8px;bottom:calc(6px + env(safe-area-inset-bottom));font-size:11px;opacity:.75">v5</div><button class="mbtn" id="playB">▶ PLAY</button><button class="mbtn" id="contB" style="display:none">CONTINUE</button>
 <div class="hint px">◀ ▶ move · hold ▲ to squish-charge, let go to spring<br>🔥 line up with baddies to auto-fire · stick &amp; wall-jump<br>Keys: ←→/A D · Space/Z jump · ↓ drop · P pause</div></div>
 <div id="pause" class="ov"><div class="title px" style="font-size:44px">PAUSED</div><button class="mbtn" id="resB">RESUME</button><button class="mbtn" id="cpB">BACK TO CHECKPOINT</button><button class="mbtn" id="musB">MUSIC: ON</button><button class="mbtn" id="quitB">TITLE</button></div>
 <div id="win" class="ov"><div class="panel"><div class="px" style="font-size:30px;color:#ffe066">★ LEVEL CLEAR! ★</div><div id="winT" class="px" style="font-size:17px"></div><button class="mbtn" id="againB">PLAY AGAIN</button></div></div>
@@ -39,7 +39,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#2b1840;touch-action:n
 "use strict";
 const $=s=>document.querySelector(s),cv=$('#c'),ctx=cv.getContext('2d');
 const WW=1500,TOP=-6400;let VW=240,VH=400,SC=2;
-function resize(){const w=innerWidth,h=innerHeight;SC=Math.max(1,Math.min(w/240,h/200));VW=Math.ceil(w/SC);VH=Math.ceil(h/SC);cv.width=VW;cv.height=VH;ctx.imageSmoothingEnabled=false}
+function resize(){const d=window.devicePixelRatio||1,w=Math.round(innerWidth*d),h=Math.round(innerHeight*d);const S=Math.max(1,Math.round(Math.min(w/240,h/200)));SC=S/d;VW=Math.ceil(w/S);VH=Math.ceil(h/S);cv.width=VW;cv.height=VH;cv.style.width=(VW*S/d)+'px';cv.style.height=(VH*S/d)+'px';ctx.imageSmoothingEnabled=false}
 addEventListener('resize',resize);resize();
 document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});document.addEventListener('gesturestart',e=>e.preventDefault());
 let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647},rr=(a,b)=>a+rnd()*(b-a);
@@ -85,7 +85,7 @@ function buildLevel(){seed=11;plats=[];path=[];stars=[];springs=[];enemies=[];ho
    const inner=dir>0?WW-150:136,last=L();const y0=last.y;
    addPath(P(dir>0?inner-26:inner-24+14,y0-6,50,'oneway'));P(dir>0?WW-260:20,y0+110,240,'cloud',{net:1});
    const ledges=6;const topY=y0-14-(ledges-1)*42+46;
-   P(dir>0?inner:inner,topY,14,'wall',{h:(y0-75)-topY});
+   P(dir>0?inner:inner,topY,14,'wall',{h:(y0-75)-topY});P(dir>0?WW-6:0,topY-40,6,'wall',{h:(y0+20)-(topY-40),edge:1});
    for(let k=0;k<ledges;k++){const yy=y0-14-k*42;const left=(k%2==0)==(dir>0);const lx=dir>0?(left?inner+14:WW-48):(left?14:inner-54+14);addPath(P(dir>0?(left?inner+14:WW-66):(left?14:inner-52),yy,52,'oneway',{zone:zoneOf(yy)}))}
    // wall-jump bonus stars high up the shaft
    for(let k=0;k<5;k++)stars.push({x:dir>0?WW-14:14,y:y0-40-k*50});
@@ -203,7 +203,7 @@ const A0=Math.PI*R*R*.97,EL=2*R*Math.sin(Math.PI/N),HS=1/240;
 function input(){const b=window.__bot;if(b)return b;return{L:keys.L,R:keys.R,J:keys.J,D:keys.D,ax:joy.on?joy.ax:null}}
 let prevIn={};
 function heroStep(dt){const inp=input(),sub=4,h=dt/sub;const onG=H.gT>0||H.coyote>0;
- if(inp.J&&!prevIn.J){H.jPress=time;if(!onG&&H.wall&&H.stickT<.9){wallJump()}}
+ if(inp.J&&!prevIn.J){H.jPress=time;if(!onG&&H.wall&&H.stickT<.9&&H.wjSide!==H.wall){wallJump()}}
  if(inp.J&&onG&&H.jPress!=null&&time-H.jPress>.1){if(!H.chargeOn)sfx('charge');H.chargeOn=true;H.charge=Math.min(1,H.charge+dt*1.4)}
  if(!inp.J&&prevIn.J&&onG&&H.jPress!=null){doJump(H.chargeOn?H.charge:0)}
  if(!inp.J){H.chargeOn=false;if(!onG)H.charge=0}
@@ -235,7 +235,7 @@ function heroStep(dt){const inp=input(),sub=4,h=dt/sub;const onG=H.gT>0||H.coyot
  if(H.gT>0&&Math.abs(H.vxs/HS)>20)H.walk+=dt*12;
  }
 function doJump(c){const v=380+c*190;setVel(null,-v,HS);H.gT=0;H.coyote=0;H.charge=0;H.chargeOn=false;H.jPress=null;sfx(c>.2?'cjump':'jump');if(c>.2){ring(H.cx,H.cy+R,'#fff');burst(H.cx,H.cy+R,10,'#fff')}}
-function wallJump(){setVel(-H.wall*160,-370,HS);burst(H.cx+H.wall*R,H.cy,6,'#fff');H.wall=0;H.stickT=1;sfx('jump')}
+function wallJump(){H.wjSide=H.wall;setVel(-H.wall*160,-370,HS);burst(H.cx+H.wall*R,H.cy,6,'#fff');H.wall=0;H.stickT=1;sfx('jump')}
 function windAt(x,y){for(const w of winds)if(y>w.y0&&y<w.y1&&x>w.x0&&x<w.x1){const on=Math.sin(time*1.3+w.ph);return on>0?w.dir*240*on:0}return 0}
 function collideHero(h){let gnd=null,wall=0,bounceV=0;const near=plats.filter(p=>p.y-50<H.cy+40&&p.y+(p.h||7)+40>H.cy&&p.x-30<H.cx&&p.x+p.w+30>H.cx);
  for(const q of H.p){const vy=(q.y-q.oy)/h;
@@ -244,7 +244,7 @@ function collideHero(h){let gnd=null,wall=0,bounceV=0;const near=plats.filter(p=
    if(H.drop>0)continue;
    if(q.y>p.y&&q.oy<=p.y+1.5&&q.y<p.y+p.h+6){if(p.t=='cloud'&&vy>230)bounceV=Math.max(bounceV,vy);q.y=p.y;gnd=p;q.ox=q.x-((q.x-q.ox)*.85+((p.vx||0)*h)*.15)}}
   if(q.x<0){q.x=0;q.ox=q.x}if(q.x>WW){q.x=WW;q.ox=q.x}}
- if(gnd){if(H.gT<=0&&H.airT>.15){sfx('land');if(H.airT>.45){burst(H.cx,H.cy+R,6,'#fff');dust(H.cx,H.cy+R)}gnd.sq=1}H.gT=.12;H.coyote=.15;H.airT=0;H.gC=gnd;H.ground=gnd;H.stickT=0;
+ if(gnd){if(H.gT<=0&&H.airT>.15){sfx('land');if(H.airT>.45){burst(H.cx,H.cy+R,6,'#fff');dust(H.cx,H.cy+R)}gnd.sq=1}H.gT=.12;H.coyote=.15;H.airT=0;H.wjSide=0;H.gC=gnd;H.ground=gnd;H.stickT=0;
   if(gnd.mover)for(const q of H.p)q.x+=gnd.dx/4}
  else H.gC=null;
  if(wall&&!H.wall&&H.gT<=0){sfx('stick');burst(H.cx+wall*R,H.cy,4,'#fff')}H.wall=wall;
@@ -318,13 +318,13 @@ function drawBG(){const alt=-cam.y;
 function grassTop(x,y,w,base,light,dark){rr2(x-1,y-1,w+2,5,OL);rr2(x,y,w,3,base);rr2(x,y,w,1,light);for(let i=1;i<w;i+=3){const hh=(hash(x*3+i)*3)|0;rr2(x+i,y-hh,1,hh,base)}rr2(x-2,y+1,2,3,base);rr2(x+w,y+1,2,3,base);for(let i=2;i<w-2;i+=5)rr2(x+i,y+3,2,1+(hash(i+x)*2|0),dark)}
 function drawPlat(p){const x=Math.round(p.x),y=Math.round(p.y+(p.sq?Math.sin(p.sq*9)*p.sq*1.5:0));
  if(p.castle)return;
- if(p.t=='wall'){rr2(x-1,y-1,p.w+2,p.h+2,OL);for(let yy=0;yy<p.h;yy+=8)for(let xx=0;xx<p.w;xx+=7)rr2(x+xx+((yy/8)%2)*3,y+yy,6,7,(yy/8+xx/7)%3?'#f3d9ff':'#e2c2fb');rr2(x,y,p.w,2,'#fff');return}
- if(p.t=='solid'){const x0=Math.max(x,Math.floor(cam.x)-4),x1=Math.min(x+p.w,cam.x+VW+4);rr2(x0,y,x1-x0,p.h,'#d9a066');for(let i=Math.floor(x0/10)*10;i<x1;i+=10)rr2(i+((i/10)%2)*4,y+10+(hash(i)*20|0),3,2,'#b97d44');rr2(x0,y+30,x1-x0,50,'#c48a52');grassTop(x0,y-2,x1-x0,'#6be06b','#b0ff9e','#43b043');return}
+ if(p.t=='wall'){rr2(x-1,y-1,p.w+2,p.h+2,OL);rr2(x,y,p.w,p.h,'#efd3ff');rr2(x,y,Math.min(3,p.w/3),p.h,'#fbefff');rr2(x+p.w-2,y,2,p.h,'#dcbcf5');rr2(x,y,p.w,2,'#fff');return}
+ if(p.t=='solid'){const x0=Math.max(x,Math.floor(cam.x)-4),x1=Math.min(x+p.w,cam.x+VW+4);rr2(x0,y,x1-x0,p.h,'#d9a066');rr2(x0,y+30,x1-x0,50,'#c48a52');grassTop(x0,y-2,x1-x0,'#6be06b','#b0ff9e','#43b043');return}
  if(p.t=='cloud'){const n=Math.max(3,p.w/11|0),pu=i=>x+5+i*(p.w-10)/(n-1);for(let i=0;i<n;i++)circ(pu(i),y+3,8+(i%2),OL);for(let i=0;i<n;i++)circ(pu(i),y+3,6.6+(i%2),'#fff');rr2(x+3,y+5,p.w-6,5,'#e6dcff');for(let i=0;i<n;i+=2)rr2(pu(i)-2,y-2,3,1,'#fff');rr2(x+4,y+9,p.w-8,1,OL);return}
  if(p.mover){rr2(x-1,y-1,p.w+2,p.h+2,OL);rr2(x,y,p.w,p.h,'#ff9ed2');rr2(x,y,p.w,2,'#ffd6ec');for(let i=4;i<p.w-4;i+=10)star5(x+i+3,y+4,2.2,'#ffe066',1,null);const f=(time*20|0)%2;rr2(x+p.w/2-6,y+p.h+1,12,1,OL);rr2(x+p.w/2-(f?6:2),y+p.h+2,f?12:4,1,'#fff');return}
- if(p.zone=='hill'){rr2(x-1,y-1,p.w+2,p.h+3,OL);rr2(x,y,p.w,p.h+1,'#ffcf8a');for(let i=3;i<p.w;i+=8)rr2(x+i,y+4,2,2,'#e8a55e');rr2(x,y,p.w,3,'#ff8fc8');for(let i=2;i<p.w-2;i+=6)rr2(x+i,y+3,3,1+(hash(i+x)*3|0),'#ff8fc8');rr2(x,y,p.w,1,'#ffd6ec');return}
- if(p.zone=='cloud'){rr2(x-1,y-1,p.w+2,p.h+2,OL);rr2(x,y,p.w,p.h,'#e9e2ff');rr2(x,y,p.w,2,'#fff');for(let i=4;i<p.w-3;i+=9){rr2(x+i,y+3,3,3,'#c9b8ff');rr2(x+i,y+3,1,1,'#fff')}return}
- rr2(x-1,y,p.w+2,p.h+2,OL);rr2(x,y,p.w,p.h+1,'#d9a066');for(let i=3;i<p.w-2;i+=7)rr2(x+i,y+4+(hash(i+x)*2|0),2,2,'#b97d44');rr2(x+2,y+p.h+1,p.w-4,2,OL);grassTop(x,y,p.w,'#6be06b','#b0ff9e','#43b043');
+ if(p.zone=='hill'){rr2(x-1,y-1,p.w+2,p.h+3,OL);rr2(x,y,p.w,p.h+1,'#ffcf8a');rr2(x,y,p.w,3,'#ff8fc8');for(let i=2;i<p.w-2;i+=6)rr2(x+i,y+3,3,1+(hash(i+x)*3|0),'#ff8fc8');rr2(x,y,p.w,1,'#ffd6ec');return}
+ if(p.zone=='cloud'){rr2(x-1,y-1,p.w+2,p.h+2,OL);rr2(x,y,p.w,p.h,'#e9e2ff');rr2(x,y,p.w,2,'#fff');rr2(x,y+p.h-2,p.w,2,'#d8ccff');return}
+ rr2(x-1,y,p.w+2,p.h+2,OL);rr2(x,y,p.w,p.h+1,'#d9a066');rr2(x,y+p.h-1,p.w,2,'#c48a52');rr2(x+2,y+p.h+1,p.w-4,2,OL);grassTop(x,y,p.w,'#6be06b','#b0ff9e','#43b043');
  if(p.flowers)for(let i=6;i<p.w-4;i+=12)flower(x+i,y-1,['#ff6fae','#ffe066','#fff'][(i/12|0)%3],x+i)}
 function flower(x,y,c,ph){const sw=Math.round(Math.sin(time*2+ph)*1);rr2(x,y-4,1,4,'#43b043');rr2(x-1+sw,y-6,3,1,c);rr2(x+sw,y-7,1,3,c);rr2(x+sw,y-6,1,1,'#ffe066')}
 function tree(t){const s=t.s,x=t.x,y=t.y,sw=Math.sin(time*1.5+t.ph)*s;rr2(x-3*s-1,y-22*s,6*s+2,22*s,OL);rr2(x-3*s,y-22*s,6*s,22*s,'#b06e35');rr2(x-3*s,y-22*s,2*s,22*s,'#cf8b4c');
@@ -334,7 +334,7 @@ function tree(t){const s=t.s,x=t.x,y=t.y,sw=Math.sin(time*1.5+t.ph)*s;rr2(x-3*s-
 function drawCastle(){const cx=WW/2,y=TOP;
  // cloud base
  for(let i=0;i<12;i++)circ(cx-220+i*40,y+14,20,OL);for(let i=0;i<12;i++)circ(cx-220+i*40,y+14,18,i%2?'#fff':'#f4efff');rr2(cx-220,y,440,2,OL);rr2(cx-220,y+2,440,3,'#ffe4f1');
- const body=(x,w,h,c,sh)=>{rr2(x-1,y-h-1,w+2,h+1,OL);rr2(x,y-h,w,h,c);rr2(x+w-4,y-h,4,h,sh);for(let i=0;i<w;i+=8){rr2(x+i-1,y-h-6,7,6,OL);rr2(x+i,y-h-5,5,5,c)}for(let yy=y-h+8;yy<y;yy+=10)for(let xx=x+3+((yy/10|0)%2)*5;xx<x+w-6;xx+=10)rr2(xx,yy,4,1,sh)};
+ const body=(x,w,h,c,sh)=>{rr2(x-1,y-h-1,w+2,h+1,OL);rr2(x,y-h,w,h,c);rr2(x+w-4,y-h,4,h,sh);for(let i=0;i<w;i+=8){rr2(x+i-1,y-h-6,7,6,OL);rr2(x+i,y-h-5,5,5,c)}rr2(x+w-5,y-h,4,h,sh)};
  body(cx-90,180,64,'#fff0fa','#f3cde6');body(cx-120,36,100,'#ffd6ec','#f3b5d6');body(cx+84,36,100,'#ffd6ec','#f3b5d6');body(cx-22,44,124,'#ffc2e2','#efa3cc');
  for(const[x,yy,w] of [[cx-102,y-100,36],[cx+102,y-100,36],[cx,y-124,44]]){ctx.fillStyle=OL;ctx.beginPath();ctx.moveTo(x-w/2-4,yy-4);ctx.lineTo(x,yy-40);ctx.lineTo(x+w/2+4,yy-4);ctx.fill();ctx.fillStyle='#ff6fae';ctx.beginPath();ctx.moveTo(x-w/2-1,yy-5);ctx.lineTo(x,yy-37);ctx.lineTo(x+w/2+1,yy-5);ctx.fill();ctx.fillStyle='#ff9fcb';ctx.beginPath();ctx.moveTo(x-w/2-1,yy-5);ctx.lineTo(x,yy-37);ctx.lineTo(x-w/6,yy-5);ctx.fill();
   rr2(x,yy-52,1,14,OL);const wv=Math.sin(time*6+x)*1.5;ctx.fillStyle='#ffe066';ctx.beginPath();ctx.moveTo(x+1,yy-52);ctx.lineTo(x+12,yy-49+wv);ctx.lineTo(x+1,yy-45);ctx.fill()}
@@ -356,7 +356,7 @@ function drawHero(){const P=H.p;if(H.inv>0&&(time*20|0)%2)return;
  const wk=H.gT>0?Math.sin(H.walk)*2:0,air=H.gT<=0;for(const s of[-1,1]){const fx=H.cx+s*5*(x1-x0)/(2*R)+(s<0?wk:-wk),fy=y1-1+(air?1:0);ctx.fillStyle=OL;ctx.beginPath();ctx.ellipse(fx,fy,4.5,3,0,0,6.29);ctx.fill();ctx.fillStyle='#e8407f';ctx.beginPath();ctx.ellipse(fx,fy,3.3,2,0,0,6.29);ctx.fill()}
  const path=()=>{ctx.beginPath();const m={x:(P[N-1].x+P[0].x)/2,y:(P[N-1].y+P[0].y)/2};ctx.moveTo(m.x,m.y);for(let i=0;i<N;i++){const p=P[i],q=P[(i+1)%N];ctx.quadraticCurveTo(p.x,p.y,(p.x+q.x)/2,(p.y+q.y)/2)}ctx.closePath()};
  path();ctx.lineWidth=3;ctx.strokeStyle=OL;ctx.stroke();ctx.fillStyle='#ff8fc8';ctx.fill();
- ctx.save();path();ctx.clip();rr2(x0,(y0+y1)/2+3,x1-x0,y1-y0,'#f272b0');for(let yy=Math.round((y0+y1)/2+2);yy<y1;yy+=2)for(let xx=Math.round(x0)+(yy%4?1:0);xx<x1;xx+=2)rr2(xx,yy,1,1,'#ff8fc8');circ(H.cx-3,H.cy-5,4,'#ffd0e8');rr2(H.cx-4,H.cy-7,2,2,'#fff');ctx.restore();
+ ctx.save();path();ctx.clip();rr2(x0,(y0+y1)/2+3,x1-x0,y1-y0,'#f87fbc');circ(H.cx-3,H.cy-5,4,'#ffd0e8');rr2(H.cx-4,H.cy-7,2,2,'#fff');ctx.restore();
  // face
  const fw=(x1-x0)/(2*R),fh=(y1-y0)/(2*R),F=H.face,dt=1/60;F.next-=dt;if(F.next<0){F.blink=.13;F.next=2+rnd()*3}F.blink-=dt;F.happy-=dt;F.hurt-=dt;
  const moving=Math.abs(H.vxs/HS)>20||H.gT<=0;F.idle=moving||H.chargeOn?0:F.idle+dt;
@@ -408,7 +408,7 @@ function render(){ctx.setTransform(1,0,0,1,0,0);drawBG();
  for(const s of springs)if(vis(s.x,s.y)){const c=s.t>0?2:6;rr2(s.x-6,s.y-c-4,12,4,OL);rr2(s.x-5,s.y-c-3,10,2,'#ff4f6a');rr2(s.x-5,s.y-c-3,10,1,'#ff9fb0');for(let k=0;k<c;k+=2){rr2(s.x-4,s.y-c+k,8,1,'#ccc');rr2(s.x-4,s.y-c+k+1,8,1,'#888')}}
  for(const c of cps)if(vis(c.x,c.y)){rr2(c.x-1,c.y-26,2,26,OL);circ(c.x,c.y-27,2,'#ffe066');ctx.fillStyle=OL;const wv=Math.sin(time*5);ctx.beginPath();ctx.moveTo(c.x+1,c.y-25);ctx.lineTo(c.x+14,c.y-20+wv);ctx.lineTo(c.x+1,c.y-14);ctx.fill();ctx.fillStyle=c.on?'#7dff9a':'#eee';ctx.beginPath();ctx.moveTo(c.x+1,c.y-24);ctx.lineTo(c.x+12,c.y-20+wv);ctx.lineTo(c.x+1,c.y-16);ctx.fill();if(c.on&&(time*4|0)%2)star5(c.x+5,c.y-20,2,'#fff',1,null)}
  
- for(const s of stars)if(!s.got&&vis(s.x,s.y)){star5(s.x,s.y+Math.sin(time*3+s.x)*1.5,5,'#ffe066',Math.cos(time*3+s.x*.1));if((time*3+s.x|0)%5==0)rr2(s.x+4,s.y-5,1,1,'#fff')}
+ for(const s of stars)if(!s.got&&vis(s.x,s.y)){star5(s.x,s.y+Math.sin(time*3+s.x)*1.5,5,'#ffe066',.55+.45*Math.abs(Math.cos(time*2+s.x*.1+s.y*.07)));if((time*3+s.x|0)%5==0)rr2(s.x+4,s.y-5,1,1,'#fff')}
  for(const e of enemies)if(vis(e.x,e.y))drawEnemy(e);
  drawHero();drawFB();
  for(const p of parts){ctx.globalAlpha=Math.min(1,p.l*2);if(p.ring){ctx.strokeStyle=p.c;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(p.x,p.y,(0.35-p.l)*60+4,(0.35-p.l)*15+1,0,0,6.29);ctx.stroke()}else if(p.txt){ctx.fillStyle='#fff';ctx.font='bold 7px monospace';ctx.fillText(p.txt,p.x,p.y)}else if(p.big)circ(p.x,p.y,2.5*p.l*2+.5,p.c);else{rr2(p.x,p.y,2,2,p.c);if(p.c=='#ffe066')rr2(p.x-1,p.y+.5,4,1,p.c)}}ctx.globalAlpha=1;
@@ -453,7 +453,7 @@ let last=performance.now(),acc=0,fN=0,fT=0;
 function loop(t){requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;acc+=dt;let n=0;while(acc>=1/60&&n<3){tick(1/60);acc-=1/60;n++}if(n==3)acc=0;render();stats.frames++;fN++;fT+=dt;if(fT>=1){stats.fps=fN/fT;fN=0;fT=0}}
 requestAnimationFrame(loop);
 // ================= TEST / BOT =================
-window.__pb={stats,get H(){return H},get enemies(){return enemies},get fbs(){return fbs},get path(){return path},get state(){return state},get cam(){return cam},get stars(){return stars},start,tick,render,get time(){return time},get track(){return track},
+window.__pb={stats,get H(){return H},get plats(){return plats},set plats(v){plats=v},get enemies(){return enemies},get fbs(){return fbs},get path(){return path},get state(){return state},get cam(){return cam},get stars(){return stars},start,tick,render,get time(){return time},get track(){return track},
  botTarget(){if(!H)return null;let k=0;if(H.ground&&H.ground.idx!=null)k=H.ground.idx;else if(this._cur)k=this._cur;const t=path[Math.min(path.length-1,k+1)];return t?{x:t.castle?WW/2:t.x+t.w/2,y:t.y}:null},
  bot(){const onG=H.gT>0||H.coyote>0;
   if(H.ground&&H.gT>0){if(H.ground.idx!=null){this._cur=H.ground.idx;this._side=null}else{let k=this._cur||0;let best=k,bd=1e9;for(let j=Math.max(0,k-15);j<Math.min(path.length,k+15);j++){const p=path[j];if(p.y>=H.ground.y-2){const d=Math.abs(p.y-H.ground.y)+Math.abs(p.x+p.w/2-H.cx)*.3;if(d<bd){bd=d;best=j}}}this._cur=best;this._side=H.ground}}
